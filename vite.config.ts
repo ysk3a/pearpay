@@ -3,6 +3,7 @@ import vue from "@vitejs/plugin-vue";
 import Components from 'unplugin-vue-components/vite';
 import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 import { fileURLToPath, URL } from 'node:url';
+import path from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
 
 const host = process.env.TAURI_DEV_HOST;
@@ -16,11 +17,12 @@ export default defineConfig(async () => ({
         PrimeVueResolver()
       ]
     }),
-        tailwindcss(),
+    tailwindcss(),
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      // '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': path.resolve(__dirname, './src'),
     }
   },
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
