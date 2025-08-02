@@ -7,24 +7,22 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, PropType } from 'vue';
+import { onBeforeMount, onMounted, PropType } from 'vue';
+import type { ICellRendererParams } from "ag-grid-community";
 
-//   const props = defineProps({
-//     params: {
-//       type: Object as PropType<ICellRendererParams & { clickHandler: Function}>, 
-//       required: true
-//     }
-//   })
+const props = defineProps({
+    params: {
+        type: Object as PropType<ICellRendererParams>,// & { clickHandler: Function}>, 
+        required: true
+    }
+})
 
 onMounted(() => {
-    // console.log(props.params)
+    console.log('onMounted', props.params)
 })
-// function  beforeMount() {
-//     this.cellValue = this.params.value;
-//   }
-//  function       buttonClicked() {
-//             console.log('Software Launched');
-//         }
+onBeforeMount(() => {
+    console.log('onBeforeMount', props)
+})
 </script>
 
 <style scoped></style>

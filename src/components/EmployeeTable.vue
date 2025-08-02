@@ -1,5 +1,5 @@
 <template>
-  <Dialog>
+  <Dialog v-model:open="visible">
 
     <Card class="aspect-video">
       <CardHeader>
@@ -9,18 +9,18 @@
             <Button type="button" variant="outline" @click="visible = true">
               Add
             </Button>
-            <DialogTrigger as-child>
+            <!-- <DialogTrigger as-child>
               <Button variant="outline">
                 Edit Profile
               </Button>
-            </DialogTrigger>
+            </DialogTrigger> -->
           </div>
         </CardTitle>
       </CardHeader>
       <CardContent class="h-full">
         <div style="height: 100%" :data-ag-theme-mode="mode">
           <ag-grid-vue style="width: 100%; height: 100%;" @grid-ready="onGridReady" :rowData="employeeList"
-            :columnDefs="columnDefs"></ag-grid-vue>
+            :columnDefs="columnDefs" :rowSelection="rowSelection"></ag-grid-vue>
         </div>
       </CardContent>
     </Card>
@@ -50,6 +50,11 @@
         <Button type="submit">
           Save changes
         </Button>
+        <!-- <DialogClose as-child>
+          <Button type="button" variant="secondary" v-on:click="visible = false">
+            Close
+          </Button>
+        </DialogClose> -->
       </DialogFooter>
     </DialogContent>
   </Dialog>
@@ -73,6 +78,7 @@ import {
   GridOptions,
   GridReadyEvent,
   ModuleRegistry,
+  RowSelectionOptions,
   themeQuartz,
   ValidationModule,
 } from "ag-grid-community";
@@ -91,12 +97,16 @@ const mode = useColorMode()
 //     },
 //     "dark",
 //   );
+const rowSelection = ref<RowSelectionOptions | "single" | "multiple">({
+  mode: "singleRow",
+});
 const columnDefs = ref<ColDef[]>([
   { field: "id", headerName: "Employee ID" },
   { field: "name", },
   { field: "email" },
   { field: "salary" },
   {
+    pinned: 'right',
     colId: "actions",
     headerName: "Actions",
     cellRenderer: AppCellRendererButton,
@@ -113,6 +123,16 @@ const columnDefs = ref<ColDef[]>([
   // { field: "paymentDate", headerName: "Date of Payment"},
   // { field: "yearTotalPaid"}
 ]);
+// const onSelectionChanged = () => {
+//   const selectedData = gridApi.value.getSelectedRows();
+//   console.log('Selection Changed', selectedData);
+// };
+
+// const getSelectedRowData = () => {
+//   let selectedData = gridApi.value.getSelectedRows();
+//   alert(`Selected Data:\n${JSON.stringify(selectedData)}`);
+//   return selectedData;
+// };
 
 const gridApi = shallowRef<GridApi | null>(null);
 
