@@ -1,5 +1,6 @@
 import "primeicons/primeicons.css";
 import "./style.css";
+import "./index.css";
 import "./flags.css";
 
 import { createApp } from "vue";

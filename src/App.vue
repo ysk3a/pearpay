@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { invoke } from "@tauri-apps/api/core";
-// import ThemeToggle from "./components/ThemeToggle.vue";
-
+import DialogExample from "./components/DialogExample.vue";
 const greetMsg = ref("");
 const name = ref("");
 
@@ -26,8 +25,9 @@ async function greet() {
 <template>
   <main class="container">
     <h1>Welcome to Tauri + Vue</h1>
-    <!-- <ThemeSwitcher /> -->
     <ThemeToggle />
+    <DialogExample />
+
     <div class="card grid grid-cols-1 md:grid-cols-2 gap-4">
         <InputGroup>
             <InputGroupAddon>

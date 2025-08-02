@@ -9,6 +9,17 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Button: typeof import('./src/components/ui/button/Button.vue')['default']
+    Dialog: typeof import('./src/components/ui/dialog/Dialog.vue')['default']
+    DialogClose: typeof import('./src/components/ui/dialog/DialogClose.vue')['default']
+    DialogContent: typeof import('./src/components/ui/dialog/DialogContent.vue')['default']
+    DialogDescription: typeof import('./src/components/ui/dialog/DialogDescription.vue')['default']
+    DialogExample: typeof import('./src/components/DialogExample.vue')['default']
+    DialogFooter: typeof import('./src/components/ui/dialog/DialogFooter.vue')['default']
+    DialogHeader: typeof import('./src/components/ui/dialog/DialogHeader.vue')['default']
+    DialogOverlay: typeof import('./src/components/ui/dialog/DialogOverlay.vue')['default']
+    DialogScrollContent: typeof import('./src/components/ui/dialog/DialogScrollContent.vue')['default']
+    DialogTitle: typeof import('./src/components/ui/dialog/DialogTitle.vue')['default']
+    DialogTrigger: typeof import('./src/components/ui/dialog/DialogTrigger.vue')['default']
     DropdownMenu: typeof import('./src/components/ui/dropdown-menu/DropdownMenu.vue')['default']
     DropdownMenuCheckboxItem: typeof import('./src/components/ui/dropdown-menu/DropdownMenuCheckboxItem.vue')['default']
     DropdownMenuContent: typeof import('./src/components/ui/dropdown-menu/DropdownMenuContent.vue')['default']
