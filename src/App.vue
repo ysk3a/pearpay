@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
 
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import {
   Breadcrumb,
@@ -20,6 +20,7 @@ import {
 
 import AppSidebar from "./components/AppSidebar.vue";
 import AppBreadcrumb from "./components/AppBreadcrumb.vue";
+import { appDataDir, appLocalDataDir, configDir, dataDir, localDataDir } from '@tauri-apps/api/path';
 
 const value = ref([
   { label: 'Apps', color: '#34d399', value: 16, icon: 'pi pi-table' },
@@ -30,6 +31,21 @@ const value = ref([
 const tags = Array.from({ length: 50 }).map(
   (_, i, a) => `v1.2.0-beta.${a.length - i}`,
 )
+
+
+async function getDirData() {
+  const configDirPath = await configDir();
+  const dataDirPath = await dataDir();
+  const appDataDirPath = await appDataDir();
+  const appLocalDataDirPath = await appLocalDataDir();
+  const localDataDirPath = await localDataDir();
+  console.log('getDirData', configDirPath, dataDirPath, appDataDirPath, appLocalDataDirPath, localDataDirPath)
+}
+
+onMounted(() => {
+    getDirData();
+    console.log(`the component is now mounted.`);
+});
 
 </script>
 

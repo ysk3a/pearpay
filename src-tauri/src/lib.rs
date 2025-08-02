@@ -14,7 +14,8 @@ pub fn run() {
         sql: "CREATE TABLE IF NOT EXISTS employees (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
-                email TEXT
+                email TEXT,
+                salary BIGINT
             )",
         kind: MigrationKind::Up,
     }];
