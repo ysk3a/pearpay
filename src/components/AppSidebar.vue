@@ -1,9 +1,26 @@
 <script setup lang="ts">
+import {
+  AudioWaveform,
+  BookOpen,
+  Bot,
+  Frame,
+  GalleryVerticalEnd,
+  Map,
+  PieChart,
+  Settings2,
+  SquareTerminal,
+} from 'lucide-vue-next'
+import NavMain from '@/components/NavMain.vue'
+import NavProjects from '@/components/NavProjects.vue'
+
 import { ChartArea, Command, Wallet, NotebookTabs, Users } from 'lucide-vue-next'
 
 import { h, ref } from 'vue'
 import NavUser from '@/components/NavUser.vue'
 import { Label } from '@/components/ui/label'
+// import TeamSwitcher from '@/components/TeamSwitcher.vue'
+import ThemeToggle from './ThemeToggle.vue'
+
 import {
   Sidebar,
   SidebarContent,
@@ -18,22 +35,124 @@ import {
   type SidebarProps,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { Switch } from '@/components/ui/switch'
-import ThemeToggle from './ThemeToggle.vue'
 import { useRouter } from 'vue-router'
+const router = useRouter();
 
 const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: 'icon',
 })
-const router = useRouter();
 
-// This is sample data
+// This is sample data.
 const data = {
   user: {
     name: 'shadcn',
     email: 'm@example.com',
     avatar: '/avatars/shadcn.jpg',
   },
+  teams: [
+    {
+      name: 'Acme Inc',
+      logo: GalleryVerticalEnd,
+      plan: 'Enterprise',
+    },
+    {
+      name: 'Acme Corp.',
+      logo: AudioWaveform,
+      plan: 'Startup',
+    },
+    {
+      name: 'Evil Corp.',
+      logo: Command,
+      plan: 'Free',
+    },
+  ],
+  navSecondary: [
+{
+      title: 'Playground',
+      url: '#',
+      icon: SquareTerminal,
+      isActive: true,
+      items: [
+        {
+          title: 'History',
+          url: '#',
+        },
+        {
+          title: 'Starred',
+          url: '#',
+        },
+        {
+          title: 'Settings',
+          url: '#',
+        },
+      ],
+    },
+    {
+      title: 'Models',
+      url: '#',
+      icon: Bot,
+      items: [
+        {
+          title: 'Genesis',
+          url: '#',
+        },
+        {
+          title: 'Explorer',
+          url: '#',
+        },
+        {
+          title: 'Quantum',
+          url: '#',
+        },
+      ],
+    },
+    {
+      title: 'Documentation',
+      url: '#',
+      icon: BookOpen,
+      items: [
+        {
+          title: 'Introduction',
+          url: '#',
+        },
+        {
+          title: 'Get Started',
+          url: '#',
+        },
+        {
+          title: 'Tutorials',
+          url: '#',
+        },
+        {
+          title: 'Changelog',
+          url: '#',
+        },
+      ],
+    },
+    {
+      title: 'Settings',
+      url: '#',
+      icon: Settings2,
+      items: [
+        {
+          title: 'General',
+          url: '#',
+        },
+        {
+          title: 'Team',
+          url: '#',
+        },
+        {
+          title: 'Billing',
+          url: '#',
+        },
+        {
+          title: 'Limits',
+          url: '#',
+        },
+      ],
+    },
+  ],
   navMain: [
     {
       title: 'Payroll',
@@ -59,10 +178,27 @@ const data = {
       icon: ChartArea,
       isActive: false,
     },
+
+  ],
+  projects: [
+    {
+      name: 'Design Engineering',
+      url: '#',
+      icon: Frame,
+    },
+    {
+      name: 'Sales & Marketing',
+      url: '#',
+      icon: PieChart,
+    },
+    {
+      name: 'Travel',
+      url: '#',
+      icon: Map,
+    },
   ],
   mails: [],
 }
-
 let activeItem = ref(data.navMain[0])
 let mails = ref(data.mails)
 const { setOpen } = useSidebar()
@@ -77,88 +213,49 @@ function onNavClick(item: any) {
 </script>
 
 <template>
-  <Sidebar class="overflow-hidden *:data-[sidebar=sidebar]:flex-row" v-bind="props">
-    <!-- This is the first sidebar -->
-    <!-- We disable collapsible and adjust width to icon. -->
-    <!-- This will make the sidebar appear as icons. -->
-    <Sidebar collapsible="none" class="w-[calc(var(--sidebar-width-icon)+1px)]! border-r">
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" as-child class="md:h-8 md:p-0">
-              <a href="#">
-                <div
-                  class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Command class="size-4" />
-                </div>
-                <div class="grid flex-1 text-left text-sm leading-tight">
-                  <span class="truncate font-medium">Acme Inc</span>
-                  <span class="truncate text-xs">Enterprise</span>
-                </div>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent class="px-1.5 md:px-0">
-            <SidebarMenu>
-              <SidebarMenuItem v-for="item in data.navMain" :key="item.title">
-                <SidebarMenuButton :tooltip="h('div', { hidden: false }, item.title)"
-                  :is-active="activeItem.title === item.title" class="px-2.5 md:px-2" @click="onNavClick(item)">
-                  <component :is="item.icon" />
-                  <span>{{ item.title }}</span>
-                  <!-- <RouterLink :to="item.url"><span>{{ item.title }}</span></RouterLink> -->
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter>
-        <ThemeToggle />
-        <hr>
-        <NavUser :user="data.user" />
-      </SidebarFooter>
-    </Sidebar>
-
-    <!--  This is the second sidebar -->
-    <!--  We disable collapsible and let it fill remaining space -->
-    <Sidebar collapsible="none" class="hidden flex-1 md:flex">
-      <SidebarHeader class="gap-3.5 border-b p-4">
-        <div class="flex w-full items-center justify-between">
-          <div class="text-base font-medium text-foreground">
-            {{ activeItem.title }}
-          </div>
-          <Label class="flex items-center gap-2 text-sm">
-            <span>Unreads</span>
-            <Switch class="shadow-none" />
-          </Label>
-        </div>
-        <SidebarInput placeholder="Type to search..." />
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup class="px-0">
-          <SidebarGroupContent>
-            <!-- <a
-              v-for="mail in mails"
-              :key="mail.email"
-              href="#"
-              class="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex flex-col items-start gap-2 border-b p-4 text-sm leading-tight whitespace-nowrap last:border-b-0"
-            >
-              <div class="flex w-full items-center gap-2">
-                <span>{{ mail.name }}</span>
-                <span class="ml-auto text-xs">{{ mail.date }}</span>
+  <Sidebar v-bind="props">
+    <SidebarHeader>
+      <!-- <TeamSwitcher :teams="data.teams" /> -->
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton size="lg" as-child class="md:h-8 md:p-0">
+            <a href="#">
+              <div
+                class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                <Command class="size-4" />
               </div>
-              <span class="font-medium">{{ mail.subject }}</span>
-              <span class="line-clamp-2 w-[260px] whitespace-break-spaces text-xs">
-                {{ mail.teaser }}
-              </span>
-            </a> -->
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+              <div class="grid flex-1 text-left text-sm leading-tight">
+                <span class="truncate font-medium">Acme Inc</span>
+                <span class="truncate text-xs">Enterprise</span>
+              </div>
+            </a>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarHeader>
+    <SidebarContent>
+      <NavMain :items="data.navSecondary" />
+      <NavProjects :projects="data.projects" />
+      <SidebarGroup>
+        <SidebarGroupContent class="px-1.5 md:px-0">
+          <SidebarMenu>
+            <SidebarMenuItem v-for="item in data.navMain" :key="item.title">
+              <SidebarMenuButton :tooltip="h('div', { hidden: false }, item.title)"
+                :is-active="activeItem.title === item.title" class="px-2.5 md:px-2" @click="onNavClick(item)">
+                <component :is="item.icon" />
+                <span>{{ item.title }}</span>
+                <!-- <RouterLink :to="item.url"><span>{{ item.title }}</span></RouterLink> -->
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    </SidebarContent>
+    <SidebarFooter>
+      <ThemeToggle />
+      <hr>
+      <NavUser :user="data.user" />
+    </SidebarFooter>
+    <SidebarRail />
   </Sidebar>
 </template>
