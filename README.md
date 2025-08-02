@@ -5,6 +5,8 @@
 - The table uses number related columns as INTEGER with the assumption that number input will be at most 8-byte values(64-bits) due to SQLite being only able to store 8-byte values(64-bits).
     - INTEGER data type was chosen instead of REAL data type due to the sole reason that floating-point numbers can sometimes leader to rounding errors.
     - If value ends up being more than 8 digits/bytes, workaround is required to convert the number to string when storing to SQLite and parse into integer/bigInt/double on retrieval. This is with the assumption that the string value is at most 256-bytes. If value comes larger than 256 bytes, workaround to storing as BLOB data type is required.
+- Running `npm run tauri build` on windows creates executable.
+- Prototype build. Nothing fancy. Just using primeng, shadcn-vue, ag-grid for placeholder components and has basic local CRUD. 
 
 
 ## Recommended IDE Setup
