@@ -6,12 +6,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 // Pass { disableTransition: false } to enable transitions
 const mode = useColorMode()
-const root = document.getElementsByTagName('html')[0];
+// const root = document.getElementsByTagName('html')[0];
 
 function themeChange(thememode: "light" | "dark" | "auto") {
-    if (thememode == "dark") {
-                root.classList.toggle('dark');
-    }
+    // if (thememode == "dark") {
+    //             root.classList.toggle('dark');
+    // }
     mode.value = thememode;
 }
 </script>
