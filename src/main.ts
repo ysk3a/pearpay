@@ -16,6 +16,11 @@ import AppState from './plugins/appState.js';
 // @ts-expect-error process is a nodejs global
 import Noir from './presets/Noir.js';
 
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'; 
+
+// Register all Community features
+ModuleRegistry.registerModules([AllCommunityModule]);
+
 const app = createApp(App);
 
 app.use(PrimeVue, {

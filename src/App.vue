@@ -16,6 +16,7 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import AppSidebar from "./components/AppSidebar.vue";
+import EmployeeTable from "./components/EmployeeTable.vue";
 
 </script>
 
@@ -45,11 +46,12 @@ import AppSidebar from "./components/AppSidebar.vue";
         </Breadcrumb>
       </header>
       <div class="flex flex-1 flex-col gap-4 p-4">
-        <div
+        <!-- <div
           v-for="index in 24"
           :key="index"
           class="aspect-video h-12 w-full rounded-lg bg-muted/50"
-        />
+        /> -->
+        <EmployeeTable />
       </div>
     </SidebarInset>
   </SidebarProvider>
