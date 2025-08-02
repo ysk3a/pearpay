@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/sidebar'
 
 import AppSidebar from "./components/AppSidebar.vue";
+import AppBreadcrumb from "./components/AppBreadcrumb.vue";
 
 const value = ref([
   { label: 'Apps', color: '#34d399', value: 16, icon: 'pi pi-table' },
@@ -41,19 +42,7 @@ const tags = Array.from({ length: 50 }).map(
       <header class="z-50 sticky top-0 flex shrink-0 items-center gap-2 border-b bg-background p-4">
         <SidebarTrigger class="-ml-1" />
         <Separator orientation="vertical" class="mr-2 h-4" />
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem class="hidden md:block">
-              <BreadcrumbLink href="#">
-                All Inboxes
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator class="hidden md:block" />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Inbox</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+        <AppBreadcrumb />
       </header>
       <RouterView />
 
