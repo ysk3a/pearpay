@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%" :data-ag-theme-mode="mode">
-    <ag-grid-vue style="width: 100%; height: 100%;" 
+    <ag-grid-vue style="width: 100%; height: 100%;"
         @grid-ready="onGridReady" :rowData="rowData"
       :columnDefs="columnDefs"></ag-grid-vue>
   </div>
@@ -18,13 +18,22 @@ import {
   GridOptions,
   GridReadyEvent,
   ModuleRegistry,
+  themeQuartz,
   ValidationModule,
 } from "ag-grid-community";
 import { useColorMode } from '@vueuse/core';
 
 
 const mode = useColorMode()
-
+    // const theme = themeQuartz
+    //   .withParams(
+    //     {
+    //       backgroundColor: "--background",
+    //       foregroundColor: "--foreground",
+    //       browserColorScheme: "dark",
+    //     },
+    //     "dark",
+    //   );
 const columnDefs = ref<ColDef[]>([
   { field: "make", },
   { field: "model" },
