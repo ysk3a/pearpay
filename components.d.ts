@@ -39,12 +39,7 @@ declare module 'vue' {
     InputNumber: typeof import('primevue/inputnumber')['default']
     InputText: typeof import('primevue/inputtext')['default']
     Select: typeof import('primevue/select')['default']
-    SelectButton: typeof import('primevue/selectbutton')['default']
     ThemeSwitcher: typeof import('./src/components/ThemeSwitcher.vue')['default']
     ThemeToggle: typeof import('./src/components/ThemeToggle.vue')['default']
-    ToggleSwitch: typeof import('primevue/toggleswitch')['default']
-  }
-  export interface GlobalDirectives {
-    StyleClass: typeof import('primevue/styleclass')['default']
   }
 }
