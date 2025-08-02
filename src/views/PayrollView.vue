@@ -133,7 +133,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import {
     Breadcrumb,
@@ -158,6 +158,7 @@ import {
     CardTitle,
 } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import Database from "@tauri-apps/plugin-sql";
 
 import AppSidebar from "../components/AppSidebar.vue";
 import EmployeeTable from "../components/EmployeeTable.vue";
@@ -172,6 +173,33 @@ const value = ref([
 const tags = Array.from({ length: 50 }).map(
     (_, i, a) => `v1.2.0-beta.${a.length - i}`,
 )
+
+type Employee = {
+    id: number;
+    name: string;
+    email: string;
+};
+const employeeList = ref<Employee[]>()
+async function getEmployees() {
+    try {
+        const db = await Database.load("sqlite:test.db");
+        const dbEmployee = await db.select<Employee[]>("SELECT * FROM employees");
+        //   setError("");
+        employeeList.value = dbEmployee;
+        console.log('next: gting data from db:', dbEmployee);
+        //   setIsLoadingUsers(false);
+    } catch (error) {
+        console.log('error getting data from db:', error);
+        //   setError("Failed to get users - check console");
+    }
+}
+
+onMounted(() => {
+    console.log(`the component is now mounted.`);
+    getEmployees();
+
+})
+
 </script>
 
 <style scoped></style>
