@@ -43,7 +43,7 @@
           </FormField>
         </div>
         <DialogFooter>
-          <Button type="submit" form="dialogFormEdit">
+          <Button type="submit" form="dialogFormEdit" :disabled="!form.meta.value.dirty || !form.meta.value.valid">
             Save changes
           </Button>
         </DialogFooter>
@@ -94,7 +94,7 @@
           </FormField>
         </div>
         <DialogFooter>
-          <Button type="submit" form="dialogFormAdd">
+          <Button type="submit" form="dialogFormAdd" :disabled="!form.meta.value.dirty || !form.meta.value.valid">
             Save changes
           </Button>
         </DialogFooter>
@@ -121,7 +121,7 @@
     <CardContent class="h-full">
       <div style="height: 100%" :data-ag-theme-mode="mode">
         <ag-grid-vue style="width: 100%; height: 100%;" @grid-ready="onGridReady" :rowData="employeeList"
-          :columnDefs="columnDefs" :rowSelection="rowSelection" :context="context"
+          :columnDefs="columnDefs" :rowSelection="rowSelection" :context="context" :get-row-id="getRowId"
           @selection-changed="onSelectionChanged"></ag-grid-vue>
       </div>
     </CardContent>
@@ -159,6 +159,7 @@ import {
   ClientSideRowModelModule,
   ColDef,
   ColGroupDef,
+  GetRowIdFunc,
   GetRowIdParams,
   GridApi,
   GridOptions,
@@ -196,7 +197,7 @@ import { toast } from 'vue-sonner'
 const formSchema = toTypedSchema(z.object({
   name: z.string().min(2).regex(/(?!^\d+$)^.+$/).trim(),
   email: z.string().trim(),//.email(),
-  salary: z.string(),//coerce.number()//bigint()
+  salary: z.string(),//.coerce.number()//bigint()
 }) satisfies z.ZodType<Omit<Employee, "id">>)
 
 
@@ -217,11 +218,11 @@ const { formattedValue, inputRef, numberValue, setValue } = useCurrencyInput(
     "currencyDisplay": CurrencyDisplay.name,
     "precision": 2,
     "hideCurrencySymbolOnFocus": true,
-    "hideGroupingSeparatorOnFocus": true,
-    "hideNegligibleDecimalDigitsOnFocus": true,
-    "autoDecimalDigits": false,
+    "hideGroupingSeparatorOnFocus": false,
+    "hideNegligibleDecimalDigitsOnFocus": false,
+    "autoDecimalDigits": true,
     "useGrouping": true,
-    "accountingSign": false
+    "accountingSign": false,
   }
 );
 // const gridOptions = ref<GridOptions>({
@@ -269,7 +270,9 @@ const columnDefs = ref<ColDef[]>([
 const initialState = ref<GridState>({
   rowSelection: ["2"],
 });
-
+const getRowId = ref<GetRowIdFunc>((params: GetRowIdParams) =>
+  String(params.data.id),
+);
 const onSelectionChanged = () => {
   const selectedData = gridApi.value?.getSelectedRows();
   console.log('Selection Changed', selectedData);
@@ -348,7 +351,7 @@ const onSubmit = form.handleSubmit((values: Omit<Employee, "id">) => {
 // }
 
 const selectedRowId = ref();
-
+const selectedRowData = ref<Employee>();
 const dialogLayoutType = ref<string>();
 
 function openDialog(openDialogType: string, cellProp?: ICellRendererParams) {
@@ -357,9 +360,13 @@ function openDialog(openDialogType: string, cellProp?: ICellRendererParams) {
     visible.value = true
   } else if (cellProp && openDialogType == 'UPDATE') {
     console.log('::openDialog, cellProp', cellProp)
-    visible.value = true
-    dialogLayoutType.value = 'UPDATE'
-    selectedRowId.value = cellProp.data.id
+    visible.value = true;
+    dialogLayoutType.value = 'UPDATE';
+    selectedRowId.value = cellProp.data.id;
+    selectedRowData.value = cellProp.data;
+    if (selectedRowData.value) {
+      form.setValues(selectedRowData.value)
+    }
   }
 }
 
@@ -386,6 +393,12 @@ import { format } from 'date-fns';
 async function addEmployee(employee: Omit<Employee, "id">) {
   try {
     isLoading.value = true;
+    let transformEmployee: Omit<Employee, "id"> = {
+      ...employee
+    }
+    if (employee.salary == undefined || employee.salary.trim() == '') {
+      transformEmployee.salary = '0.00';
+    }
     // INSERT example
     const db = await Database.load("sqlite:test.db");
     const result = await db.execute("INSERT INTO employees (name, email, salary) VALUES ($1, $2, $3)",
@@ -425,6 +438,12 @@ async function addEmployee(employee: Omit<Employee, "id">) {
 async function updateEmployee(employee: Employee) {
   try {
     isLoading.value = true;
+    let transformEmployee: Employee = {
+      ...employee
+    }
+    if (employee.salary == undefined || employee.salary.trim() == '') {
+      transformEmployee.salary = '0.00';
+    }
     const db = await Database.load("sqlite:test.db");
     // UPDATE example
     const result = await db.execute(
@@ -436,9 +455,9 @@ async function updateEmployee(employee: Employee) {
         employee.id
       ]
     );
-    console.log('::updateEmployee', result);
     visible.value = false
-    const updatedEmployee = await db.select<Employee[]>("SELECT * FROM employees WHERE id = $1", [result.lastInsertId]);
+    const updatedEmployee = await db.select<Employee[]>("SELECT * FROM employees WHERE id = $1", [employee.id]);
+    console.log('::updateEmployee', result, updatedEmployee);
     gridApi.value?.applyTransaction({ update: updatedEmployee });
     toast.info('Employee Updated', {
       description: `${format(new Date(), 'PPP HH:mm:ss')}`,
