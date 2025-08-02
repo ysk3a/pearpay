@@ -20,10 +20,12 @@ import {
 } from '@/components/ui/sidebar'
 import { Switch } from '@/components/ui/switch'
 import ThemeToggle from './ThemeToggle.vue'
+import { useRouter } from 'vue-router'
 
 const props = withDefaults(defineProps<SidebarProps>(), {
   collapsible: 'icon',
 })
+const router = useRouter();
 
 // This is sample data
 const data = {
@@ -35,13 +37,13 @@ const data = {
   navMain: [
     {
       title: 'Payroll',
-      url: '#',
+      url: '/',
       icon: Wallet,
       isActive: true,
     },
     {
       title: 'Employee',
-      url: '#',
+      url: '/employee',
       icon: Users,
       isActive: false,
     },
@@ -61,29 +63,32 @@ const data = {
   mails: [],
 }
 
-const activeItem = ref(data.navMain[0])
-const mails = ref(data.mails)
+let activeItem = ref(data.navMain[0])
+let mails = ref(data.mails)
 const { setOpen } = useSidebar()
+
+function onNavClick(item: any) {
+  console.log('::onnavclick', item)
+  activeItem.value = item
+  setOpen(true)
+  router.push(item.url)
+
+}
 </script>
 
 <template>
-  <Sidebar
-    class="overflow-hidden *:data-[sidebar=sidebar]:flex-row"
-    v-bind="props"
-  >
+  <Sidebar class="overflow-hidden *:data-[sidebar=sidebar]:flex-row" v-bind="props">
     <!-- This is the first sidebar -->
     <!-- We disable collapsible and adjust width to icon. -->
     <!-- This will make the sidebar appear as icons. -->
-    <Sidebar
-      collapsible="none"
-      class="w-[calc(var(--sidebar-width-icon)+1px)]! border-r"
-    >
+    <Sidebar collapsible="none" class="w-[calc(var(--sidebar-width-icon)+1px)]! border-r">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" as-child class="md:h-8 md:p-0">
               <a href="#">
-                <div class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                <div
+                  class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Command class="size-4" />
                 </div>
                 <div class="grid flex-1 text-left text-sm leading-tight">
@@ -100,20 +105,11 @@ const { setOpen } = useSidebar()
           <SidebarGroupContent class="px-1.5 md:px-0">
             <SidebarMenu>
               <SidebarMenuItem v-for="item in data.navMain" :key="item.title">
-                <SidebarMenuButton
-                  :tooltip="h('div', { hidden: false }, item.title)"
-                  :is-active="activeItem.title === item.title"
-                  class="px-2.5 md:px-2"
-                  @click="() => {
-                    activeItem = item
-
-                    const mail = data.mails.sort(() => Math.random() - 0.5)
-                    mails = mail.slice(0, Math.max(5, Math.floor(Math.random() * 10) + 1))
-                    setOpen(true)
-                  }"
-                >
+                <SidebarMenuButton :tooltip="h('div', { hidden: false }, item.title)"
+                  :is-active="activeItem.title === item.title" class="px-2.5 md:px-2" @click="onNavClick(item)">
                   <component :is="item.icon" />
                   <span>{{ item.title }}</span>
+                  <!-- <RouterLink :to="item.url"><span>{{ item.title }}</span></RouterLink> -->
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -121,7 +117,7 @@ const { setOpen } = useSidebar()
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <ThemeToggle/>
+        <ThemeToggle />
         <hr>
         <NavUser :user="data.user" />
       </SidebarFooter>

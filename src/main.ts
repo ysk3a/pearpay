@@ -17,6 +17,7 @@ import AppState from './plugins/appState.js';
 import Noir from './presets/Noir.js';
 
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community'; 
+import router from "./router/index.ts";
 
 // Register all Community features
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -38,7 +39,7 @@ app.use(AppState);
 app.use(ConfirmationService);
 app.use(ToastService);
 app.use(DialogService);
-
+app.use(router);
 app.component('ThemeSwitcher', ThemeSwitcher);
 
 app.mount("#app");
