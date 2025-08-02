@@ -12,7 +12,7 @@ import type { ICellRendererParams } from "ag-grid-community";
 
 const props = defineProps({
     params: {
-        type: Object as PropType<ICellRendererParams & { activeUpdate: Function}>, 
+        type: Object as PropType<ICellRendererParams & { openDialog: Function}>, 
         required: true
     }
 })
@@ -20,15 +20,13 @@ const props = defineProps({
 onMounted(() => {
     console.log('onMounted', props.params)
 })
+
 onBeforeMount(() => {
     console.log('onBeforeMount', props)
 })
-watch(() => props.params.context, (newVal) => {
-    console.log(newVal)
-}, { deep: true })
+
 function invokeParentMethod() {
-    console.log('::invokeParentMethod', props.params, props.params.context, JSON.stringify(props.params.context));
-    props.params.activeUpdate(props.params);
+    props.params.openDialog("UPDATE", props.params);
 }
 
 </script>
