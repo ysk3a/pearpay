@@ -21,11 +21,9 @@ import EmployeeTable from "./components/EmployeeTable.vue";
 </script>
 
 <template>
-  <SidebarProvider
-    :style="{
-      '--sidebar-width': '350px',
-    }"
-  >
+  <SidebarProvider :style="{
+    '--sidebar-width': '350px',
+  }">
     <AppSidebar />
     <SidebarInset>
       <header class="sticky top-0 flex shrink-0 items-center gap-2 border-b bg-background p-4">
@@ -46,12 +44,14 @@ import EmployeeTable from "./components/EmployeeTable.vue";
         </Breadcrumb>
       </header>
       <div class="flex flex-1 flex-col gap-4 p-4">
-        <!-- <div
-          v-for="index in 24"
-          :key="index"
-          class="aspect-video h-12 w-full rounded-lg bg-muted/50"
-        /> -->
-        <EmployeeTable />
+        <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div class="grid auto-rows-min gap-4 md:grid-cols-3">
+            <div class="aspect-video rounded-xl bg-muted/50" />
+            <div class="aspect-video rounded-xl bg-muted/50" />
+            <div class="aspect-video rounded-xl bg-muted/50" />
+          </div>
+          <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+        </div>
       </div>
     </SidebarInset>
   </SidebarProvider>
@@ -65,7 +65,6 @@ import EmployeeTable from "./components/EmployeeTable.vue";
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #249b73);
 }
-
 </style>
 <style>
 /* 
@@ -178,5 +177,4 @@ button {
     background-color: #0f0f0f69;
   }
 } */
-
 </style>
