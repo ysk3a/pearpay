@@ -62,7 +62,7 @@
       </DialogHeader>
       <form @submit.prevent="onSubmit" id="dialogFormAdd">
         <div class="grid gap-4 py-4">
-          <FormField v-slot="{ componentField }" name="name" >
+          <FormField v-slot="{ componentField }" name="name">
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
@@ -121,7 +121,8 @@
     <CardContent class="h-full">
       <div style="height: 100%" :data-ag-theme-mode="mode">
         <ag-grid-vue style="width: 100%; height: 100%;" @grid-ready="onGridReady" :rowData="employeeList"
-          :columnDefs="columnDefs" :rowSelection="rowSelection" :context="context"></ag-grid-vue>
+          :columnDefs="columnDefs" :rowSelection="rowSelection" :context="context"
+          @selection-changed="onSelectionChanged"></ag-grid-vue>
       </div>
     </CardContent>
   </Card>
@@ -162,6 +163,7 @@ import {
   GridApi,
   GridOptions,
   GridReadyEvent,
+  GridState,
   ICellRendererParams,
   ModuleRegistry,
   RowSelectionOptions,
@@ -203,9 +205,9 @@ const form = useForm({
   validationSchema: formSchema,
 })
 
-watch(() => form, (oldState, newState) => {
-  console.log('watch', oldState, newState, newState.isFieldDirty('name'))
-}, { deep: true })
+// watch(() => form, (oldState, newState) => {
+//   console.log('watch', oldState, newState, newState.isFieldDirty('name'))
+// }, { deep: true })
 
 const visible = ref(false);
 
@@ -264,13 +266,17 @@ const columnDefs = ref<ColDef[]>([
   // { field: "paymentDate", headerName: "Date of Payment"},
   // { field: "yearTotalPaid"}
 ]);
-// const onSelectionChanged = () => {
-//   const selectedData = gridApi.value.getSelectedRows();
-//   console.log('Selection Changed', selectedData);
-// };
+const initialState = ref<GridState>({
+  rowSelection: ["2"],
+});
+
+const onSelectionChanged = () => {
+  const selectedData = gridApi.value?.getSelectedRows();
+  console.log('Selection Changed', selectedData);
+};
 
 // const getSelectedRowData = () => {
-//   let selectedData = gridApi.value.getSelectedRows();
+//   let selectedData = gridApi.value?.getSelectedRows();
 //   alert(`Selected Data:\n${JSON.stringify(selectedData)}`);
 //   return selectedData;
 // };
@@ -313,9 +319,9 @@ onBeforeMount(() => {
 const onSubmit = form.handleSubmit((values: Omit<Employee, "id">) => {
   console.log('::handleSubmit', values, dialogLayoutType, dialogLayoutType.value)
   if (dialogLayoutType.value == 'UPDATE') {
-    // updateEmployee({ id: });
+    updateEmployee({ id: selectedRowId.value, ...values });
   } else if (dialogLayoutType.value == 'ADD') {
-    // addEmployee();
+    addEmployee(values);
   }
   // form.resetForm();
 })
@@ -350,6 +356,7 @@ function openDialog(openDialogType: string, cellProp?: ICellRendererParams) {
     dialogLayoutType.value = 'ADD'
     visible.value = true
   } else if (cellProp && openDialogType == 'UPDATE') {
+    console.log('::openDialog, cellProp', cellProp)
     visible.value = true
     dialogLayoutType.value = 'UPDATE'
     selectedRowId.value = cellProp.data.id
@@ -363,13 +370,18 @@ async function getEmployees() {
     //   setError("");
     employeeList.value = dbEmployee;
     console.log('next: gting data from db:', dbEmployee);
-
     //   setIsLoadingUsers(false);
   } catch (error) {
     console.log('error getting data from db:', error);
     //   setError("Failed to get users - check console");
   }
 }
+import { format } from 'date-fns';
+
+// const { state, error } = useAsyncState(
+//   Database.load("sqlite:test.db").then(res => res),
+//   null // initial state
+// );
 
 async function addEmployee(employee: Omit<Employee, "id">) {
   try {
@@ -384,10 +396,11 @@ async function addEmployee(employee: Omit<Employee, "id">) {
       ]
     );
     console.log('::addEmployee', result);
+    const addedEmployee = await db.select<Employee[]>("SELECT * FROM employees WHERE id = $1", [result.lastInsertId]);
     visible.value = false
-    gridApi.value?.applyTransaction({ add: [result] });
-    toast.info('Event has been created', {
-      description: 'Sunday, December 03, 2023 at 9:00 AM',
+    gridApi.value?.applyTransaction({ add: addedEmployee });
+    toast.info('New Employee Added', {
+      description: `${format(new Date(), 'PPP HH:mm:ss')}`,
       // action: {
       //     label: 'Undo',
       //     onClick: () => console.log('Undo'),
@@ -415,7 +428,7 @@ async function updateEmployee(employee: Employee) {
     const db = await Database.load("sqlite:test.db");
     // UPDATE example
     const result = await db.execute(
-      "UPDATE employees SET name = $1, email = $2, salary = $3 WHERE id = $3",
+      "UPDATE employees SET name = $1, email = $2, salary = $3 WHERE id = $4",
       [
         employee.name,
         employee.email,
@@ -425,7 +438,21 @@ async function updateEmployee(employee: Employee) {
     );
     console.log('::updateEmployee', result);
     visible.value = false
-    gridApi.value?.applyTransaction({ update: [result] });
+    const updatedEmployee = await db.select<Employee[]>("SELECT * FROM employees WHERE id = $1", [result.lastInsertId]);
+    gridApi.value?.applyTransaction({ update: updatedEmployee });
+    toast.info('Employee Updated', {
+      description: `${format(new Date(), 'PPP HH:mm:ss')}`,
+      // action: {
+      //     label: 'Undo',
+      //     onClick: () => console.log('Undo'),
+      // },
+      // style: {
+      //     background: '#6ee7b7'
+      // },
+      // class: 'my-toast',
+      // duration: Infinity,
+      closeButton: true,
+    })
     // getUsers().then(() => setIsLoadingUsers(false));
   } catch (error) {
     console.log(error);

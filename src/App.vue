@@ -68,7 +68,6 @@ onMounted(() => {
     '--sidebar-width': '350px',
   }">
     <AppSidebar />
-    <AppFormExample />
 
     <SidebarInset>
       <header class="z-50 sticky top-0 flex shrink-0 items-center gap-2 border-b bg-background p-4">

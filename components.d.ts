@@ -61,6 +61,7 @@ declare module 'vue' {
     FormDescription: typeof import('./src/components/ui/form/FormDescription.vue')['default']
     FormField: typeof import('@primevue/forms/formfield')['default']
     FormItem: typeof import('./src/components/ui/form/FormItem.vue')['default']
+    FormLabel: typeof import('./src/components/ui/form/FormLabel.vue')['default']
     FormMessage: typeof import('./src/components/ui/form/FormMessage.vue')['default']
     Input: typeof import('./src/components/ui/input/Input.vue')['default']
     InputText: typeof import('primevue/inputtext')['default']
