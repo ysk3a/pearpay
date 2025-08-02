@@ -1,42 +1,66 @@
 <template>
-  <Card class="aspect-video">
-    <CardHeader>
-      <CardTitle>
-        <div class="custom-card-title">
-          Employee Status
-          <Button type="button" @click="visible = true">
-            Add
-          </Button>
+  <Dialog>
+
+    <Card class="aspect-video">
+      <CardHeader>
+        <CardTitle>
+          <div class="custom-card-title">
+            Employee Status
+            <Button type="button" variant="outline" @click="visible = true">
+              Add
+            </Button>
+            <DialogTrigger as-child>
+              <Button variant="outline">
+                Edit Profile
+              </Button>
+            </DialogTrigger>
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent class="h-full">
+        <div style="height: 100%" :data-ag-theme-mode="mode">
+          <ag-grid-vue style="width: 100%; height: 100%;" @grid-ready="onGridReady" :rowData="employeeList"
+            :columnDefs="columnDefs"></ag-grid-vue>
         </div>
-      </CardTitle>
-    </CardHeader>
-    <CardContent class="h-full">
-      <div style="height: 100%" :data-ag-theme-mode="mode">
-        <ag-grid-vue style="width: 100%; height: 100%;" @grid-ready="onGridReady" :rowData="employeeList"
-          :columnDefs="columnDefs"></ag-grid-vue>
+      </CardContent>
+    </Card>
+
+    <DialogContent class="sm:max-w-[425px]">
+      <DialogHeader>
+        <DialogTitle>Edit profile</DialogTitle>
+        <DialogDescription>
+          Make changes to your profile here. Click save when you're done.
+        </DialogDescription>
+      </DialogHeader>
+      <div class="grid gap-4 py-4">
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="name" class="text-right">
+            Name
+          </Label>
+          <Input id="name" value="Pedro Duarte" class="col-span-3" />
+        </div>
+        <div class="grid grid-cols-4 items-center gap-4">
+          <Label for="username" class="text-right">
+            Username
+          </Label>
+          <Input id="username" value="@peduarte" class="col-span-3" />
+        </div>
       </div>
-    </CardContent>
-  </Card>
-  <Dialog v-model:visible="visible" modal header="Edit Profile" :style="{ width: '25rem' }">
-    <span class="text-surface-500 dark:text-surface-400 block mb-8">Update your information.</span>
-    <div class="flex items-center gap-4 mb-4">
-      <label for="username" class="font-semibold w-24">Username</label>
-      <InputText id="username" class="flex-auto" autocomplete="off" />
-    </div>
-    <div class="flex items-center gap-4 mb-8">
-      <label for="email" class="font-semibold w-24">Email</label>
-      <InputText id="email" class="flex-auto" autocomplete="off" />
-    </div>
-    <div class="flex justify-end gap-2">
-      <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
-      <Button type="button" label="Save" @click="visible = false"></Button>
-    </div>
+      <DialogFooter>
+        <Button type="submit">
+          Save changes
+        </Button>
+      </DialogFooter>
+    </DialogContent>
   </Dialog>
+
+
+
 </template>
 
 <script setup lang="ts">
-import Dialog from 'primevue/dialog';
-import Button from 'primevue/button';
+// import Dialog from 'primevue/dialog';
+// import Button from 'primevue/button';
 
 import { onMounted, ref, shallowRef } from 'vue';
 import { AgGridVue } from "ag-grid-vue3";
@@ -54,6 +78,7 @@ import {
 } from "ag-grid-community";
 import { useAsyncState, useColorMode } from '@vueuse/core';
 import Database from "@tauri-apps/plugin-sql";
+import AppCellRendererButton from './AppCellRendererButton.vue';
 const visible = ref(false);
 
 const mode = useColorMode()
@@ -71,6 +96,11 @@ const columnDefs = ref<ColDef[]>([
   { field: "name", },
   { field: "email" },
   { field: "salary" },
+  {
+    colId: "actions",
+    headerName: "Actions",
+    cellRenderer: AppCellRendererButton,
+  },
   // { field: "phone", headerName: "Phone NO."},
   // { field: "transactionId" },
   // { field: "bankName" },

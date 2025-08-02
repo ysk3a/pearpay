@@ -9,6 +9,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AppBreadcrumb: typeof import('./src/components/AppBreadcrumb.vue')['default']
+    AppCellRendererButton: typeof import('./src/components/AppCellRendererButton.vue')['default']
     AppSidebar: typeof import('./src/components/AppSidebar.vue')['default']
     Avatar: typeof import('./src/components/ui/avatar/Avatar.vue')['default']
     AvatarFallback: typeof import('./src/components/ui/avatar/AvatarFallback.vue')['default']
