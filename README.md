@@ -1,6 +1,11 @@
-# Tauri + Vue + TypeScript
+# Tauri + Vue + TypeScript Payroll App
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+- Simple local payroll calculator desktop application that uses SQLite to locally store data.
+- Uses tauri/rust to create database file and tauri-sql-plugin to perform CRUD operations given user input.
+- The table uses number related columns as INTEGER with the assumption that number input will be at most 8-byte values(64-bits) due to SQLite being only able to store 8-byte values(64-bits).
+    - INTEGER data type was chosen instead of REAL data type due to the sole reason that floating-point numbers can sometimes leader to rounding errors.
+    - If value ends up being more than 8 digits/bytes, workaround is required to convert the number to string when storing to SQLite and parse into integer/bigInt/double on retrieval. This is with the assumption that the string value is at most 256-bytes. If value comes larger than 256 bytes, workaround to storing as BLOB data type is required.
+
 
 ## Recommended IDE Setup
 

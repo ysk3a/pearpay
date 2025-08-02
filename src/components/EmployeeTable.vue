@@ -36,7 +36,7 @@
               <FormControl>
                 <!-- <Input id="salary" v-bind="componentField" placeholder="Salary" class="col-span-3" /> -->
                 <Input id="salary" placeholder="$0.00" class="col-span-3" ref="inputRef" v-model="formattedValue"
-                  type="text" v-bind="componentField" autocomplete="off" />
+                  type="text" v-bind="componentField" autocomplete="off" @keydown.space.prevent />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -87,7 +87,7 @@
               <FormControl>
                 <!-- <Input id="salary" v-bind="componentField" placeholder="Salary" class="col-span-3" /> -->
                 <Input id="salary" placeholder="$0.00" class="col-span-3" ref="inputRef" v-model="formattedValue"
-                  type="text" v-bind="componentField" autocomplete="off" />
+                  type="text" v-bind="componentField" autocomplete="off" @keydown.space.prevent />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -170,16 +170,18 @@ import {
   RowSelectionOptions,
   themeQuartz,
   ValidationModule,
+  ValueGetterParams,
 } from "ag-grid-community";
 import { useAsyncState, useColorMode } from '@vueuse/core';
-import { CurrencyDisplay, useCurrencyInput } from "vue-currency-input";
+import { CurrencyDisplay, useCurrencyInput, ValueScaling } from "vue-currency-input";
 import Database from "@tauri-apps/plugin-sql";
 import AppCellRendererButton from './AppCellRendererButton.vue';
 type Employee = {
   id: number;
   name: string;
   email: string;
-  salary: string; //number
+  salary: number; // valueScaling: ValueScaling.precision i.e. integer
+  // should update table column in rust file to be INTEGER instead of BIGINT
 };
 import { toTypedSchema } from '@vee-validate/zod'
 // import { z } from "zod/v4";
@@ -197,7 +199,7 @@ import { toast } from 'vue-sonner'
 const formSchema = toTypedSchema(z.object({
   name: z.string().min(2).regex(/(?!^\d+$)^.+$/).trim(),
   email: z.string().trim(),//.email(),
-  salary: z.string(),//.coerce.number()//bigint()
+  salary: z.coerce.number()//.string(),//.coerce.number()//bigint()
 }) satisfies z.ZodType<Omit<Employee, "id">>)
 
 
@@ -214,15 +216,16 @@ const visible = ref(false);
 
 const { formattedValue, inputRef, numberValue, setValue } = useCurrencyInput(
   {
-    "currency": "USD",
-    "currencyDisplay": CurrencyDisplay.name,
-    "precision": 2,
-    "hideCurrencySymbolOnFocus": true,
-    "hideGroupingSeparatorOnFocus": false,
-    "hideNegligibleDecimalDigitsOnFocus": false,
-    "autoDecimalDigits": true,
-    "useGrouping": true,
-    "accountingSign": false,
+    currency: "USD",
+    currencyDisplay: CurrencyDisplay.name,
+    precision: 2,
+    hideCurrencySymbolOnFocus: true,
+    hideGroupingSeparatorOnFocus: false,
+    hideNegligibleDecimalDigitsOnFocus: false,
+    autoDecimalDigits: false,
+    useGrouping: true,
+    accountingSign: false,
+    valueScaling: ValueScaling.precision
   }
 );
 // const gridOptions = ref<GridOptions>({
@@ -241,11 +244,23 @@ const mode = useColorMode()
 const rowSelection = ref<RowSelectionOptions | "single" | "multiple">({
   mode: "singleRow",
 });
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+    // style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+});
 const columnDefs = ref<ColDef[]>([
   { field: "id", headerName: "Employee ID" },
   { field: "name", },
   { field: "email" },
-  { field: "salary" },
+  { 
+    field: "salary",
+    valueGetter: (params: ValueGetterParams) => {
+      const amountInDollars = params.data.salary / 100; // Convert to decimal
+      return currencyFormatter.format(amountInDollars);
+    }
+  },
   {
     pinned: 'right',
     colId: "actions",
@@ -322,9 +337,11 @@ onBeforeMount(() => {
 const onSubmit = form.handleSubmit((values: Omit<Employee, "id">) => {
   console.log('::handleSubmit', values, dialogLayoutType, dialogLayoutType.value)
   if (dialogLayoutType.value == 'UPDATE') {
-    updateEmployee({ id: selectedRowId.value, ...values });
+    console.log('update', { id: selectedRowId.value, ...values, salary: numberValue.value ? numberValue.value : 0 })
+    // updateEmployee({ id: selectedRowId.value, ...values });
   } else if (dialogLayoutType.value == 'ADD') {
-    addEmployee(values);
+    addEmployee({...values, salary: numberValue.value ? numberValue.value : 0});
+    // console.log('add', values, numberValue.value)
   }
   // form.resetForm();
 })
@@ -373,7 +390,7 @@ function openDialog(openDialogType: string, cellProp?: ICellRendererParams) {
 async function getEmployees() {
   try {
     const db = await Database.load("sqlite:test.db");
-    const dbEmployee = await db.select<Employee[]>("SELECT * FROM employees");
+    const dbEmployee = await db.select<Employee[]>("SELECT * FROM employees"); // WHERE whatever period range
     //   setError("");
     employeeList.value = dbEmployee;
     console.log('next: gting data from db:', dbEmployee);
@@ -396,8 +413,11 @@ async function addEmployee(employee: Omit<Employee, "id">) {
     let transformEmployee: Omit<Employee, "id"> = {
       ...employee
     }
-    if (employee.salary == undefined || employee.salary.trim() == '') {
-      transformEmployee.salary = '0.00';
+    // if (employee.salary == undefined || employee.salary.trim() == '') {
+    //   transformEmployee.salary = '0.00';
+    // }
+    if (employee.salary == undefined) {
+      transformEmployee.salary = 0;
     }
     // INSERT example
     const db = await Database.load("sqlite:test.db");
@@ -441,8 +461,11 @@ async function updateEmployee(employee: Employee) {
     let transformEmployee: Employee = {
       ...employee
     }
-    if (employee.salary == undefined || employee.salary.trim() == '') {
-      transformEmployee.salary = '0.00';
+    // if (employee.salary == undefined || employee.salary.trim() == '') {
+    //   transformEmployee.salary = '0.00';
+    // }
+    if (employee.salary == undefined) {
+      transformEmployee.salary = 0;
     }
     const db = await Database.load("sqlite:test.db");
     // UPDATE example
