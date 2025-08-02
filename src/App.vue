@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-
-import { onMounted, ref } from "vue";
+import { Toaster } from '@/components/ui/sonner'
+import { computed, onMounted, ref } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import {
   Breadcrumb,
@@ -17,12 +17,17 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
+import 'vue-sonner/style.css' // vue-sonner v2 requires this import
 
 
 
 import AppSidebar from "./components/AppSidebar.vue";
 import AppBreadcrumb from "./components/AppBreadcrumb.vue";
 import { appDataDir, appLocalDataDir, configDir, dataDir, localDataDir } from '@tauri-apps/api/path';
+import AppFormExample from "./components/AppFormExample.vue";
+import { useColorMode } from "@vueuse/core";
+import { configure } from "vee-validate";
+const mode = useColorMode()
 
 const value = ref([
   { label: 'Apps', color: '#34d399', value: 16, icon: 'pi pi-table' },
@@ -34,6 +39,9 @@ const tags = Array.from({ length: 50 }).map(
   (_, i, a) => `v1.2.0-beta.${a.length - i}`,
 )
 
+const colorModeForToast = computed(() => mode.store.value === 'auto' ? 'system' : mode.store.value)
+// const myColorMode = computed(() => store.value === 'auto' ? system.value : store.value)
+
 
 async function getDirData() {
   const configDirPath = await configDir();
@@ -43,19 +51,25 @@ async function getDirData() {
   const localDataDirPath = await localDataDir();
   console.log('getDirData', configDirPath, dataDirPath, appDataDirPath, appLocalDataDirPath, localDataDirPath)
 }
-
+configure({
+  validateOnBlur: false
+});
 onMounted(() => {
-    getDirData();
-    console.log(`the component is now mounted.`);
+  getDirData();
+  console.log(`the component is now mounted.`);
 });
 
 </script>
 
 <template>
+  <Toaster class="pointer-events-auto" :theme="colorModeForToast" />
+
   <SidebarProvider :style="{
     '--sidebar-width': '350px',
   }">
     <AppSidebar />
+    <AppFormExample />
+
     <SidebarInset>
       <header class="z-50 sticky top-0 flex shrink-0 items-center gap-2 border-b bg-background p-4">
         <SidebarTrigger class="-ml-1" />

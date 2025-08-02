@@ -1,103 +1,137 @@
 <template>
-  <Dialog v-model:open="visible">
 
-    <Card class="aspect-video">
-      <CardHeader>
-        <CardTitle>
-          <div class="custom-card-title">
-            Employee Status
-            <Button type="button" variant="outline" @click="openDialog('ADD')">
-              Add
-            </Button>
-            <!-- <DialogTrigger as-child>
+  <Dialog v-model:open="visible" v-if="dialogLayoutType == 'UPDATE'">
+
+    <DialogContent class="sm:max-w-[425px]">
+      <DialogHeader>
+        <DialogTitle>Edit Employee</DialogTitle>
+        <DialogDescription>
+          Make changes to the selected Employee here. Click save when you're done.
+        </DialogDescription>
+      </DialogHeader>
+      <form @submit="onSubmit" id="dialogFormEdit">
+        <div class="grid gap-4 py-4">
+          <FormField v-slot="{ componentField }" name="name">
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input id="name" v-bind="componentField" placeholder="Name" class="col-span-3" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
+          <FormField v-slot="{ componentField }" name="email">
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input id="email" v-bind="componentField" placeholder="email" class="col-span-3" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="salary">
+            <FormItem>
+              <FormLabel>Salary</FormLabel>
+              <FormControl>
+                <!-- <Input id="salary" v-bind="componentField" placeholder="Salary" class="col-span-3" /> -->
+                <Input id="salary" placeholder="$0.00" class="col-span-3" ref="inputRef" v-model="formattedValue"
+                  type="text" v-bind="componentField" autocomplete="off" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+        </div>
+        <DialogFooter>
+          <Button type="submit" form="dialogFormEdit">
+            Save changes
+          </Button>
+        </DialogFooter>
+      </form>
+    </DialogContent>
+  </Dialog>
+
+  <Dialog v-model:open="visible" v-else-if="dialogLayoutType == 'ADD'">
+
+    <DialogContent class="sm:max-w-[425px]">
+      <DialogHeader>
+        <DialogTitle>Add Employee</DialogTitle>
+        <DialogDescription>
+          Add Employee details here. Click save when you're done.
+        </DialogDescription>
+      </DialogHeader>
+      <form @submit.prevent="onSubmit" id="dialogFormAdd">
+        <div class="grid gap-4 py-4">
+          <FormField v-slot="{ componentField }" name="name" >
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input id="name" v-bind="componentField" placeholder="Name" class="col-span-3" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
+          <FormField v-slot="{ componentField }" name="email">
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input id="email" v-bind="componentField" placeholder="email" class="col-span-3" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="salary">
+            <FormItem>
+              <FormLabel>Salary</FormLabel>
+              <FormControl>
+                <!-- <Input id="salary" v-bind="componentField" placeholder="Salary" class="col-span-3" /> -->
+                <Input id="salary" placeholder="$0.00" class="col-span-3" ref="inputRef" v-model="formattedValue"
+                  type="text" v-bind="componentField" autocomplete="off" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+        </div>
+        <DialogFooter>
+          <Button type="submit" form="dialogFormAdd">
+            Save changes
+          </Button>
+        </DialogFooter>
+      </form>
+    </DialogContent>
+  </Dialog>
+
+  <Card class="aspect-video">
+    <CardHeader>
+      <CardTitle>
+        <div class="custom-card-title">
+          Employee Status
+          <Button type="button" variant="outline" @click="openDialog('ADD')">
+            Add
+          </Button>
+          <!-- <DialogTrigger as-child>
               <Button variant="outline">
                 Edit Profile
               </Button>
             </DialogTrigger> -->
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent class="h-full">
-        <div style="height: 100%" :data-ag-theme-mode="mode">
-          <ag-grid-vue style="width: 100%; height: 100%;" @grid-ready="onGridReady" :rowData="employeeList"
-            :columnDefs="columnDefs" :rowSelection="rowSelection" :context="context"></ag-grid-vue>
         </div>
-      </CardContent>
-    </Card>
+      </CardTitle>
+    </CardHeader>
+    <CardContent class="h-full">
+      <div style="height: 100%" :data-ag-theme-mode="mode">
+        <ag-grid-vue style="width: 100%; height: 100%;" @grid-ready="onGridReady" :rowData="employeeList"
+          :columnDefs="columnDefs" :rowSelection="rowSelection" :context="context"></ag-grid-vue>
+      </div>
+    </CardContent>
+  </Card>
 
-    <template v-if="dialogLayoutType == 'ADD'">
-      <DialogContent class="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Add Employee</DialogTitle>
-          <DialogDescription>
-            Add Employee details here. Click save when you're done.
-          </DialogDescription>
-        </DialogHeader>
-        <div class="grid gap-4 py-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <Label for="name" class="text-right">
-              Name
-            </Label>
-            <Input id="name" placeholder="Name" class="col-span-3" />
-          </div>
-          <div class="grid grid-cols-4 items-center gap-4">
-            <Label for="email" class="text-right">
-              Email
-            </Label>
-            <Input id="email" placeholder="email@example.com" class="col-span-3" />
-          </div>
-          <div class="grid grid-cols-4 items-center gap-4">
-            <Label for="salary" class="text-right">
-              Salary
-            </Label>
-            <Input id="salary" placeholder="$0.00" class="col-span-3" ref="inputRef" v-model="formattedValue"
-              type="text" v-bind="$attrs" />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit">
-            Save changes
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </template>
-    <template v-else-if="dialogLayoutType == 'UPDATE'">
-      <DialogContent class="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Edit Employee</DialogTitle>
-          <DialogDescription>
-            Make changes to the selected Employee here. Click save when you're done.
-          </DialogDescription>
-        </DialogHeader>
-        <div class="grid gap-4 py-4">
-          <div class="grid grid-cols-4 items-center gap-4">
-            <Label for="name" class="text-right">
-              Name
-            </Label>
-            <Input id="name" placeholder="Name" class="col-span-3" />
-          </div>
-          <div class="grid grid-cols-4 items-center gap-4">
-            <Label for="email" class="text-right">
-              Email
-            </Label>
-            <Input id="email" placeholder="email@example.com" class="col-span-3" />
-          </div>
-          <div class="grid grid-cols-4 items-center gap-4">
-            <Label for="salary" class="text-right">
-              Salary
-            </Label>
-            <Input id="salary" placeholder="$0.00" class="col-span-3" ref="inputRef" v-model="formattedValue"
-              type="text" v-bind="$attrs" />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit">
-            Save changes
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </template>
-  </Dialog>
+  <!-- <template>
+
+    </template> -->
+  <!-- <template >
+
+    </template> -->
 </template>
 
 <script setup lang="ts">
@@ -110,7 +144,15 @@ import {
   NumberFieldIncrement,
   NumberFieldInput,
 } from '@/components/ui/number-field'
-import { onBeforeMount, onMounted, ref, shallowRef, watch } from 'vue';
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { h, onBeforeMount, onMounted, ref, shallowRef, watch } from 'vue';
 import { AgGridVue } from "ag-grid-vue3";
 import {
   ClientSideRowModelModule,
@@ -130,20 +172,43 @@ import { useAsyncState, useColorMode } from '@vueuse/core';
 import { CurrencyDisplay, useCurrencyInput } from "vue-currency-input";
 import Database from "@tauri-apps/plugin-sql";
 import AppCellRendererButton from './AppCellRendererButton.vue';
-const visible = ref(false);
 type Employee = {
   id: number;
   name: string;
   email: string;
-  salary: number;
+  salary: string; //number
 };
-// const formatOptions = ref<Intl.NumberFormatOptions>({
-//   currency: "USD",
-//   // currencyDisplay: 'name',
-//   // currencySign: 'accounting',
-//   style: 'currency',
-//   // compactDisplay: 'long',
-//   })
+import { toTypedSchema } from '@vee-validate/zod'
+// import { z } from "zod/v4";
+import * as z from 'zod'
+import { configure, useForm } from 'vee-validate';
+import { toast } from 'vue-sonner'
+
+// const formSchema = z.object({
+//   name: z.string(),
+//   email: z.email(),
+//   salary: z.bigint().check(z.gte(5n), z.lte(5n))
+// });
+
+// const formSchema2 = toZod<Employee>()({})
+const formSchema = toTypedSchema(z.object({
+  name: z.string().min(2).regex(/(?!^\d+$)^.+$/).trim(),
+  email: z.string().trim(),//.email(),
+  salary: z.string(),//coerce.number()//bigint()
+}) satisfies z.ZodType<Omit<Employee, "id">>)
+
+
+
+const form = useForm({
+  validationSchema: formSchema,
+})
+
+watch(() => form, (oldState, newState) => {
+  console.log('watch', oldState, newState, newState.isFieldDirty('name'))
+}, { deep: true })
+
+const visible = ref(false);
+
 const { formattedValue, inputRef, numberValue, setValue } = useCurrencyInput(
   {
     "currency": "USD",
@@ -245,6 +310,15 @@ onBeforeMount(() => {
   }
 })
 
+const onSubmit = form.handleSubmit((values: Omit<Employee, "id">) => {
+  console.log('::handleSubmit', values, dialogLayoutType, dialogLayoutType.value)
+  if (dialogLayoutType.value == 'UPDATE') {
+    // updateEmployee({ id: });
+  } else if (dialogLayoutType.value == 'ADD') {
+    // addEmployee();
+  }
+  // form.resetForm();
+})
 // async function loadDB() {
 //   try {
 //     dbInst.value = await Database.load("sqlite:test.db");
@@ -267,15 +341,18 @@ onBeforeMount(() => {
 //   }
 // }
 
-const dialogLayoutType = ref<string>('ADD');
+const selectedRowId = ref();
+
+const dialogLayoutType = ref<string>();
 
 function openDialog(openDialogType: string, cellProp?: ICellRendererParams) {
   if (openDialogType == 'ADD' && cellProp == undefined) {
-    visible.value = true
     dialogLayoutType.value = 'ADD'
+    visible.value = true
   } else if (cellProp && openDialogType == 'UPDATE') {
     visible.value = true
     dialogLayoutType.value = 'UPDATE'
+    selectedRowId.value = cellProp.data.id
   }
 }
 
@@ -286,6 +363,7 @@ async function getEmployees() {
     //   setError("");
     employeeList.value = dbEmployee;
     console.log('next: gting data from db:', dbEmployee);
+
     //   setIsLoadingUsers(false);
   } catch (error) {
     console.log('error getting data from db:', error);
@@ -306,7 +384,21 @@ async function addEmployee(employee: Omit<Employee, "id">) {
       ]
     );
     console.log('::addEmployee', result);
+    visible.value = false
     gridApi.value?.applyTransaction({ add: [result] });
+    toast.info('Event has been created', {
+      description: 'Sunday, December 03, 2023 at 9:00 AM',
+      // action: {
+      //     label: 'Undo',
+      //     onClick: () => console.log('Undo'),
+      // },
+      // style: {
+      //     background: '#6ee7b7'
+      // },
+      // class: 'my-toast',
+      // duration: Infinity,
+      closeButton: true,
+    })
     // getUsers().then(() => setIsLoadingUsers(false));
   } catch (error) {
     console.log(error);
@@ -332,6 +424,7 @@ async function updateEmployee(employee: Employee) {
       ]
     );
     console.log('::updateEmployee', result);
+    visible.value = false
     gridApi.value?.applyTransaction({ update: [result] });
     // getUsers().then(() => setIsLoadingUsers(false));
   } catch (error) {
