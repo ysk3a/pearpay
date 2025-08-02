@@ -1,9 +1,22 @@
 <template>
-  <div style="height: 100%" :data-ag-theme-mode="mode">
-    <ag-grid-vue style="width: 100%; height: 100%;" 
-        @grid-ready="onGridReady" :rowData="rowData"
-      :columnDefs="columnDefs"></ag-grid-vue>
-  </div>
+  <Card class="aspect-video">
+    <CardHeader>
+      <CardTitle>
+        <div class="custom-card-title">
+          Expenses
+          <Button type="button">
+            Add
+          </Button>
+        </div>
+      </CardTitle>
+    </CardHeader>
+    <CardContent class="h-full">
+      <div style="height: 100%" :data-ag-theme-mode="mode">
+        <ag-grid-vue style="width: 100%; height: 100%;" @grid-ready="onGridReady" :rowData="rowData"
+          :columnDefs="columnDefs"></ag-grid-vue>
+      </div>
+    </CardContent>
+  </Card>
 </template>
 
 <script setup lang="ts">

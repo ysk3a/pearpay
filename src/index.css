@@ -114,14 +114,29 @@
 }
 
 div:where([data-ag-theme-mode="dark"]) {
-  --ag-background-color:  oklch(0.141 0.005 285.823);
-  --ag-foreground-color:  oklch(0.985 0 0);
+  --ag-background-color: oklch(0.141 0.005 285.823);
+  --ag-foreground-color: oklch(0.985 0 0);
+  --ag-wrapper-border: none;
+
+  .ag-body-horizontal-scroll {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.3s linear, opacity 0.3s linear;
+  }
+
+  &:hover {
+    .ag-body-horizontal-scroll {
+      visibility: visible;
+      opacity: 1;
+    }
+  }
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

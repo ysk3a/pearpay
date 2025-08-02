@@ -9,6 +9,11 @@ import ConfirmationService from 'primevue/confirmationservice'
 import DialogService from 'primevue/dialogservice'
 import ToastService from 'primevue/toastservice';
 
+// //primevue:
+// import Dialog from 'primevue/dialog';
+// import InputText from 'primevue/inputtext';
+// import Button from 'primevue/button';
+
 import App from "./App.vue";
 import ThemeSwitcher from './components/ThemeSwitcher.vue';
 // @ts-expect-error process is a nodejs global
@@ -33,8 +38,15 @@ app.use(PrimeVue, {
             cssLayer: false,
         }
     },
-    ripple: true
+    ripple: true,
+    components: {
+        prefix: 'Prime'
+    },
 });
+// app.component('InputText', InputText);
+// app.component('Button', Button);
+// app.component('Dialog', Dialog);
+
 app.use(AppState);
 app.use(ConfirmationService);
 app.use(ToastService);

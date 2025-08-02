@@ -56,6 +56,7 @@ declare module 'vue' {
     DropdownMenuTrigger: typeof import('./src/components/ui/dropdown-menu/DropdownMenuTrigger.vue')['default']
     EmployeeTable: typeof import('./src/components/EmployeeTable.vue')['default']
     Input: typeof import('./src/components/ui/input/Input.vue')['default']
+    InputText: typeof import('primevue/inputtext')['default']
     Label: typeof import('./src/components/ui/label/Label.vue')['default']
     MeterGroup: typeof import('primevue/metergroup')['default']
     NavUser: typeof import('./src/components/NavUser.vue')['default']
