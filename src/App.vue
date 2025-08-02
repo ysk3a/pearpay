@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/sidebar'
 import AppSidebar from "./components/AppSidebar.vue";
 import EmployeeTable from "./components/EmployeeTable.vue";
+import PayrollExpenseTable from "./components/PayrollExpenseTable.vue";
 
 </script>
 
@@ -26,7 +27,7 @@ import EmployeeTable from "./components/EmployeeTable.vue";
   }">
     <AppSidebar />
     <SidebarInset>
-      <header class="sticky top-0 flex shrink-0 items-center gap-2 border-b bg-background p-4">
+      <header class="z-50 sticky top-0 flex shrink-0 items-center gap-2 border-b bg-background p-4">
         <SidebarTrigger class="-ml-1" />
         <Separator orientation="vertical" class="mr-2 h-4" />
         <Breadcrumb>
@@ -45,12 +46,24 @@ import EmployeeTable from "./components/EmployeeTable.vue";
       </header>
       <div class="flex flex-1 flex-col gap-4 p-4">
         <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div class="grid auto-rows-min gap-4 md:grid-cols-3">
+          <div class="grid auto-rows-min gap-4 md:grid-cols-4">
+            <div class="aspect-video rounded-xl bg-muted/50" />
             <div class="aspect-video rounded-xl bg-muted/50" />
             <div class="aspect-video rounded-xl bg-muted/50" />
             <div class="aspect-video rounded-xl bg-muted/50" />
           </div>
-          <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+          <div class="min-h-[100vh] flex flex-1 rounded-xl bg-muted/30 md:min-h-min gap-4 flex-wrap">
+            <div class="aspect-video flex flex-2 flex-col grow-2 gap-4 p-4 bg-muted/50 basis-2xl rounded-xl">
+              <EmployeeTable />
+              <PayrollExpenseTable />
+            </div>
+            <div class="grid auto-rows-min gap-4 bg-muted/30 md:grid-cols-1 sm:grow">
+              <div class="aspect-video rounded-xl bg-muted/90 min-w-[220px]" />
+              <div class="aspect-video rounded-xl bg-muted/90 min-w-[220px]" />
+              <div class="aspect-video rounded-xl bg-muted/90 min-w-[220px]" />
+              <div class="aspect-video rounded-xl bg-muted/90 min-w-[220px]" />
+            </div>
+          </div>
         </div>
       </div>
     </SidebarInset>
