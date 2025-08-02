@@ -10,11 +10,12 @@ import DialogService from 'primevue/dialogservice'
 import ToastService from 'primevue/toastservice';
 
 import App from "./App.vue";
-// @ts-expect-error process is a nodejs global
-import AppState from './plugins/appState.js';
 import ThemeSwitcher from './components/ThemeSwitcher.vue';
 // @ts-expect-error process is a nodejs global
+import AppState from './plugins/appState.js';
+// @ts-expect-error process is a nodejs global
 import Noir from './presets/Noir.js';
+
 const app = createApp(App);
 
 app.use(PrimeVue, {
@@ -22,13 +23,8 @@ app.use(PrimeVue, {
         preset: Noir,
         options: {
             prefix: 'p',
-            // darkModeSelector: 'system',
-            darkModeSelector: '.dark',
+            darkModeSelector: '.dark', // 'system',
             cssLayer: false,
-            // cssLayer: {
-            //     name: 'primevue',
-            //     order: 'theme, base, primevue'
-            // }
         }
     },
     ripple: true

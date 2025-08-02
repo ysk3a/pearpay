@@ -1,60 +1,58 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { invoke } from "@tauri-apps/api/core";
-import DialogExample from "./components/DialogExample.vue";
-const greetMsg = ref("");
-const name = ref("");
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
+import { Separator } from '@/components/ui/separator'
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@/components/ui/sidebar'
+import AppSidebar from "./components/AppSidebar.vue";
 
-const text1 = ref(null);
-const text2 = ref(null);
-const number = ref(null);
-const selectedCity = ref();
-const cities = ref([
-    { name: 'New York', code: 'NY' },
-    { name: 'Rome', code: 'RM' },
-    { name: 'London', code: 'LDN' },
-    { name: 'Istanbul', code: 'IST' },
-    { name: 'Paris', code: 'PRS' }
-]);
-async function greet() {
-  // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-  greetMsg.value = await invoke("greet", { name: name.value });
-}
 </script>
 
 <template>
-  <main class="container">
-    <h1>Welcome to Tauri + Vue</h1>
-    <ThemeToggle />
-    <DialogExample />
-
-    <div class="card grid grid-cols-1 md:grid-cols-2 gap-4">
-        <InputGroup>
-            <InputGroupAddon>
-                <i class="pi pi-user"></i>
-            </InputGroupAddon>
-            <InputText v-model="text1" placeholder="Username" />
-        </InputGroup>
-
-        <InputGroup>
-            <InputGroupAddon>$</InputGroupAddon>
-            <InputNumber v-model="number" placeholder="Price" />
-            <InputGroupAddon>.00</InputGroupAddon>
-        </InputGroup>
-
-        <InputGroup>
-            <InputGroupAddon>www</InputGroupAddon>
-            <InputText v-model="text2" placeholder="Website" />
-        </InputGroup>
-
-        <InputGroup>
-            <InputGroupAddon>
-                <i class="pi pi-map"></i>
-            </InputGroupAddon>
-            <Select v-model="selectedCity" :options="cities" optionLabel="name" placeholder="City" />
-        </InputGroup>
-    </div>
-  </main>
+  <SidebarProvider
+    :style="{
+      '--sidebar-width': '350px',
+    }"
+  >
+    <AppSidebar />
+    <SidebarInset>
+      <header class="sticky top-0 flex shrink-0 items-center gap-2 border-b bg-background p-4">
+        <SidebarTrigger class="-ml-1" />
+        <Separator orientation="vertical" class="mr-2 h-4" />
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem class="hidden md:block">
+              <BreadcrumbLink href="#">
+                All Inboxes
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator class="hidden md:block" />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Inbox</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </header>
+      <div class="flex flex-1 flex-col gap-4 p-4">
+        <div
+          v-for="index in 24"
+          :key="index"
+          class="aspect-video h-12 w-full rounded-lg bg-muted/50"
+        />
+      </div>
+    </SidebarInset>
+  </SidebarProvider>
 </template>
 
 <style scoped>
@@ -68,6 +66,7 @@ async function greet() {
 
 </style>
 <style>
+/* 
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
@@ -176,6 +175,6 @@ button {
   button:active {
     background-color: #0f0f0f69;
   }
-}
+} */
 
 </style>
