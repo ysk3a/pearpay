@@ -17,13 +17,13 @@ const props = defineProps({
     }
 })
 
-onMounted(() => {
-    console.log('onMounted', props.params)
-})
+// onMounted(() => {
+//     console.log('onMounted', props.params)
+// })
 
-onBeforeMount(() => {
-    console.log('onBeforeMount', props)
-})
+// onBeforeMount(() => {
+//     console.log('onBeforeMount', props)
+// })
 
 function invokeParentMethod() {
     props.params.openDialog("UPDATE", props.params);

@@ -34,10 +34,12 @@
             <FormItem>
               <FormLabel>Salary</FormLabel>
               <FormControl>
-                <!-- <Input id="salary" v-bind="componentField" placeholder="Salary" class="col-span-3" /> -->
                 <Input id="salary" placeholder="$0.00" class="col-span-3" ref="inputRef" v-model="formattedValue"
                   type="text" v-bind="componentField" autocomplete="off" @keydown.space.prevent />
               </FormControl>
+              <FormDescription>
+                Cannot contain comma separation. May Contain Decimal point up to 2 digits. Remaining digits will be dropped.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           </FormField>
@@ -85,10 +87,12 @@
             <FormItem>
               <FormLabel>Salary</FormLabel>
               <FormControl>
-                <!-- <Input id="salary" v-bind="componentField" placeholder="Salary" class="col-span-3" /> -->
-                <Input id="salary" placeholder="$0.00" class="col-span-3" ref="inputRef" v-model="formattedValue"
+                <Input id="salary" placeholder="$0.00" class="col-span-3" ref="inputRef" v-model.lazy="formattedValue"
                   type="text" v-bind="componentField" autocomplete="off" @keydown.space.prevent />
               </FormControl>
+              <FormDescription>
+                Cannot contain comma separation. May Contain Decimal point up to 2 digits. Remaining digits will be dropped.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           </FormField>
@@ -172,7 +176,7 @@ import {
   ValidationModule,
   ValueGetterParams,
 } from "ag-grid-community";
-import { useAsyncState, useColorMode } from '@vueuse/core';
+import { useAsyncState, useColorMode, watchDebounced } from '@vueuse/core';
 import { CurrencyDisplay, useCurrencyInput, ValueScaling } from "vue-currency-input";
 import Database from "@tauri-apps/plugin-sql";
 import AppCellRendererButton from './AppCellRendererButton.vue';
@@ -207,7 +211,6 @@ const formSchema = toTypedSchema(z.object({
 const form = useForm({
   validationSchema: formSchema,
 })
-
 // watch(() => form, (oldState, newState) => {
 //   console.log('watch', oldState, newState, newState.isFieldDirty('name'))
 // }, { deep: true })
@@ -217,13 +220,13 @@ const visible = ref(false);
 const { formattedValue, inputRef, numberValue, setValue } = useCurrencyInput(
   {
     currency: "USD",
-    currencyDisplay: CurrencyDisplay.name,
+    // currencyDisplay: CurrencyDisplay.name,
     precision: 2,
     hideCurrencySymbolOnFocus: true,
-    hideGroupingSeparatorOnFocus: false,
+    hideGroupingSeparatorOnFocus: true,
     hideNegligibleDecimalDigitsOnFocus: false,
     autoDecimalDigits: false,
-    useGrouping: true,
+    // useGrouping: true,
     accountingSign: false,
     valueScaling: ValueScaling.precision
   }
@@ -231,6 +234,8 @@ const { formattedValue, inputRef, numberValue, setValue } = useCurrencyInput(
 // const gridOptions = ref<GridOptions>({
 //   context: 
 // })
+watchDebounced(numberValue, (value) => console.log('update:modelValue', value), { debounce: 1000 })
+
 const mode = useColorMode()
 // const theme = themeQuartz
 //   .withParams(
@@ -245,16 +250,16 @@ const rowSelection = ref<RowSelectionOptions | "single" | "multiple">({
   mode: "singleRow",
 });
 const currencyFormatter = new Intl.NumberFormat('en-US', {
-    // style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+  // style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
 });
 const columnDefs = ref<ColDef[]>([
   { field: "id", headerName: "Employee ID" },
   { field: "name", },
   { field: "email" },
-  { 
+  {
     field: "salary",
     valueGetter: (params: ValueGetterParams) => {
       const amountInDollars = params.data.salary / 100; // Convert to decimal
@@ -323,10 +328,10 @@ const dbRef = ref<Database>();
 const employeeList = ref<Employee[]>()
 const isLoading = ref<boolean>(false);
 
-onMounted(() => {
-  console.log(`the component is now mounted.`);//, state, isLoading, error, execute);
-  // loadDB()
-});
+// onMounted(() => {
+//   console.log(`the component is now mounted.`);//, state, isLoading, error, execute);
+//   // loadDB()
+// });
 
 onBeforeMount(() => {
   context.value = {
@@ -337,10 +342,10 @@ onBeforeMount(() => {
 const onSubmit = form.handleSubmit((values: Omit<Employee, "id">) => {
   console.log('::handleSubmit', values, dialogLayoutType, dialogLayoutType.value)
   if (dialogLayoutType.value == 'UPDATE') {
-    console.log('update', { id: selectedRowId.value, ...values, salary: numberValue.value ? numberValue.value : 0 })
-    // updateEmployee({ id: selectedRowId.value, ...values });
+    // console.log('update', { id: selectedRowId.value, ...values, salary: numberValue.value ? numberValue.value : 0 })
+    updateEmployee({ id: selectedRowId.value, ...values, salary: numberValue.value ? numberValue.value : 0 });
   } else if (dialogLayoutType.value == 'ADD') {
-    addEmployee({...values, salary: numberValue.value ? numberValue.value : 0});
+    addEmployee({ ...values, salary: numberValue.value ? numberValue.value : 0 });
     // console.log('add', values, numberValue.value)
   }
   // form.resetForm();
@@ -382,7 +387,7 @@ function openDialog(openDialogType: string, cellProp?: ICellRendererParams) {
     selectedRowId.value = cellProp.data.id;
     selectedRowData.value = cellProp.data;
     if (selectedRowData.value) {
-      form.setValues(selectedRowData.value)
+      form.setValues({ ...selectedRowData.value, salary: selectedRowData.value.salary / 100 })
     }
   }
 }
