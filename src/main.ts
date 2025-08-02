@@ -22,7 +22,7 @@ app.use(PrimeVue, {
         options: {
             prefix: 'p',
             // darkModeSelector: 'system',
-            darkModeSelector: '.p-dark',
+            darkModeSelector: '.dark',
                         cssLayer: false,
             // cssLayer: {
             //     name: 'primevue',

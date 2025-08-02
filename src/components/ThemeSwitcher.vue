@@ -485,7 +485,7 @@ export default {
         onThemeToggler() {
             const root = document.getElementsByTagName('html')[0];
 
-            root.classList.toggle('p-dark');
+            root.classList.toggle('dark');
             this.iconClass = this.iconClass === 'pi-moon' ? 'pi-sun' : 'pi-moon';
         },
         getPresetExt() {
