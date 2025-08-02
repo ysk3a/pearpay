@@ -19,8 +19,9 @@
       </CardHeader>
       <CardContent class="h-full">
         <div style="height: 100%" :data-ag-theme-mode="mode">
-          <ag-grid-vue style="width: 100%; height: 100%;" @grid-ready="onGridReady" :rowData="employeeList"
-            :columnDefs="columnDefs" :rowSelection="rowSelection"></ag-grid-vue>
+          <ag-grid-vue style="width: 100%; height: 100%;" 
+          @grid-ready="onGridReady" :rowData="employeeList"
+            :columnDefs="columnDefs" :rowSelection="rowSelection" :context="context"></ag-grid-vue>
         </div>
       </CardContent>
     </Card>
@@ -67,7 +68,7 @@
 // import Dialog from 'primevue/dialog';
 // import Button from 'primevue/button';
 
-import { onMounted, ref, shallowRef } from 'vue';
+import { onBeforeMount, onMounted, ref, shallowRef, watch } from 'vue';
 import { AgGridVue } from "ag-grid-vue3";
 import {
   ClientSideRowModelModule,
@@ -77,6 +78,7 @@ import {
   GridApi,
   GridOptions,
   GridReadyEvent,
+  ICellRendererParams,
   ModuleRegistry,
   RowSelectionOptions,
   themeQuartz,
@@ -86,7 +88,9 @@ import { useAsyncState, useColorMode } from '@vueuse/core';
 import Database from "@tauri-apps/plugin-sql";
 import AppCellRendererButton from './AppCellRendererButton.vue';
 const visible = ref(false);
-
+// const gridOptions = ref<GridOptions>({
+//   context: 
+// })
 const mode = useColorMode()
 // const theme = themeQuartz
 //   .withParams(
@@ -109,7 +113,12 @@ const columnDefs = ref<ColDef[]>([
     pinned: 'right',
     colId: "actions",
     headerName: "Actions",
-    cellRenderer: AppCellRendererButton,
+    cellRenderer: "AppCellRendererButton",
+    cellRendererParams: {
+      // activeUpdate - child에서 call 하는 parameter
+      // update - parent에서 선언한 method 명
+      activeUpdate: methodFromParent.bind(this)
+    }
   },
   // { field: "phone", headerName: "Phone NO."},
   // { field: "transactionId" },
@@ -135,11 +144,21 @@ const columnDefs = ref<ColDef[]>([
 // };
 
 const gridApi = shallowRef<GridApi | null>(null);
+const context = ref<any>({});
 
 const onGridReady = (params: GridReadyEvent) => {
   gridApi.value = params.api;
+      console.log('::onGridReady', params, params.context, JSON.stringify(params.context));
   getEmployees();
 };
+
+watch(() => context, (newQuestion, oldQuestion) => {
+    console.log('::watch', newQuestion.value, oldQuestion.value, newQuestion.value.parentFunction)
+}, { deep: true })
+
+function methodFromParent(cellProp: ICellRendererParams) {
+  console.log('::methodFromParent', cellProp)
+}
 
 type Employee = {
   id: number;
@@ -163,11 +182,21 @@ const dbRef = ref<Database>();
 // );
 const employeeList = ref<Employee[]>()
 const isLoading = ref<boolean>(false);
+const parentFunction = (e: any) => {
+    console.log("parent function called", e)
+}
 
 onMounted(() => {
   console.log(`the component is now mounted.`);//, state, isLoading, error, execute);
   // loadDB()
 });
+
+onBeforeMount(() => {
+  context.value = {
+    componentParent: function() {this},
+    parentFunction
+  }
+})
 
 // async function loadDB() {
 //   try {
@@ -224,5 +253,5 @@ async function setEmployee(employee: Omit<Employee, "id">) {
   }
 }
 // expose the custom cell renderer for use within AG Grid
-// defineExpose({CellComponentRenderer})
+defineExpose({ AppCellRendererButton })
 </script>

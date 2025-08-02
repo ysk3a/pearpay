@@ -182,9 +182,7 @@ function randomInteger(min: number, max: number) {
 }
 function randomizeMeter() {
     value.value[randomInteger(0, value.value.length - 1)].value = randomInteger(1, 100 / (value.value.length))
-
 }
-
 
 
 </script>

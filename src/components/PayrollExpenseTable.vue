@@ -55,6 +55,6 @@ const gridApi = shallowRef<GridApi | null>(null);
 const onGridReady = (params: GridReadyEvent) => {
   gridApi.value = params.api;
 };
-// expose the custom cell renderer for use within AG Grid
+// // expose the custom cell renderer for use within AG Grid
 // defineExpose({CellComponentRenderer})
 </script>
